@@ -1,0 +1,55 @@
+#服务配置
+server:
+  port: 8099
+  servlet:
+    context-path: /
+spring:
+  application:
+    name: order_online
+    #数据库配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/sport?serverTimezone=GMT%2B8&characterEncoding=utf8
+  redis:
+    host: 192.168.126.150
+    password: 123321
+  #邮件配置
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 3230935352@qq.com
+    password: wnklvrqmoigvdaif
+    protocol: smtp
+    properties:
+      mail:
+        stmp:
+          auth: true
+          ssl:
+            enable: true
+            socketFactory:
+              class: com.sun.mail.util.MailSSLSocketFactory
+              fallback: false
+    default-encoding: utf-8
+#mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+tencent:
+  cloud:
+    appId: 1307368688
+    secretId: AKIDztnmaFj3A5wc9WhkfQ0Rs68xa0DEE5mT
+    secretKey: sa6PXTDk5EAuWv8B2UuAF9tSp8JI5iDc
+    region: ap-nanjing
+    bucket: emos-1307368688
+    arrow:
+      - .jpg
+      - .png
+      - .jpeg
+    size: 10485760
+
+
+
