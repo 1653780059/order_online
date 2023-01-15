@@ -2,11 +2,12 @@ package com.example.order_online.utils;
 
 
 import com.example.order_online.pojo.domain.LoginDetails;
-import com.example.order_online.pojo.domain.TbUser;
+import com.example.order_online.pojo.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Classname SecurityUtils
@@ -20,13 +21,13 @@ public class SecurityUtils {
     private static LoginDetails getLoginDetails(){
         return (LoginDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-    public static TbUser getLoginUser(){
+    public static User getLoginUser(){
         return getLoginDetails().getUser();
     }
     public static Boolean isRoot(){
         return getLoginDetails().getRoot();
     }
-    public static List<String> getPermission(){
+    public static Set<String> getPermission(){
         return getLoginDetails().getPermission();
     }
     public static void setAuthentication(Authentication authentication){

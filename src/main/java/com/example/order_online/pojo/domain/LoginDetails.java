@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Classname LoginDetails
@@ -19,8 +20,8 @@ import java.util.List;
  */
 @Data
 public class LoginDetails implements UserDetails, Serializable {
-    private TbUser user;
-    private List<String> permission;
+    private User user;
+    private Set<String> permission;
     private List<GrantedAuthority> authorities;
     private Boolean root;
     @Override

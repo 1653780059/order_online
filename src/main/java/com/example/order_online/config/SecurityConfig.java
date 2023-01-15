@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //跨域 预检查  需要放行所有OPTIONS操作
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 //.antMatchers("/**").permitAll()
-                .antMatchers("/user/login","/sys/verification","/user/checkUserName","/sys/mailVerification","/sys/uploadUserImg","/user/register").anonymous()
+                .antMatchers("/sys/login","/sys/verification","/user/checkUserName","/sys/mailVerification","/sys/uploadUserImg","/user/register").anonymous()
                 //放行静态资源和swagger资源
                 .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                 .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()

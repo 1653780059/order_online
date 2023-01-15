@@ -4,6 +4,9 @@ server:
   servlet:
     context-path: /
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   application:
     name: order_online
     #数据库配置
@@ -12,7 +15,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://localhost:3306/sport?serverTimezone=GMT%2B8&characterEncoding=utf8
+    url: jdbc:mysql://localhost:3306/order_online?serverTimezone=GMT%2B8&characterEncoding=utf8
   redis:
     host: 192.168.126.150
     password: 123321
