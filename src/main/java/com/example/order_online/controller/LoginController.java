@@ -2,9 +2,7 @@ package com.example.order_online.controller;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FastByteArrayOutputStream;
-import cn.hutool.core.io.FastByteBuffer;
 import cn.hutool.core.lang.UUID;
-import cn.hutool.core.util.RandomUtil;
 import com.example.order_online.constants.RedisConstant;
 import com.example.order_online.constants.SysConfigConstant;
 import com.example.order_online.controller.form.LoginForm;
@@ -17,16 +15,13 @@ import com.example.order_online.utils.ServletUtils;
 import com.google.code.kaptcha.Producer;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 import javax.validation.Valid;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -52,6 +47,12 @@ public class LoginController {
     private Producer producer;
     @Resource
     private RedisUtil redisUtil;
+
+    /**
+     * 登录流程
+     * @param loginForm 登录参数
+     * @return 访问token
+     */
     @PostMapping("/login")
     public Result login(@RequestBody @Valid LoginForm loginForm){
         String username = loginForm.getUsername();
@@ -84,7 +85,7 @@ public class LoginController {
     public Result verification(){
         String text = producer.createText();
         String[] split = text.split("=");
-        String uuid = UUID.randomUUID().toString();
+        String uuid = UUID.fastUUID().toString();
         redisUtil.vSet(RedisConstant.VERIFICATION_LOGIN_PRE+uuid,split[1],RedisConstant.VERIFICATION_LOGIN_EX, TimeUnit.MINUTES);
         BufferedImage image = producer.createImage(split[0]);
         FastByteArrayOutputStream out = new FastByteArrayOutputStream();

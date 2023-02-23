@@ -1,9 +1,7 @@
 package com.example.order_online.pojo.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
@@ -58,11 +56,13 @@ public class User implements Serializable {
     /**
      * 用户创建时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 用户更新时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     /**
@@ -84,6 +84,14 @@ public class User implements Serializable {
      * 是否root用户，1：是，0：否
      */
     private Integer root;
+    /**
+     * 收获地址
+     */
+    private String address;
+    /**
+     * 余额
+     */
+    private Integer balance;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

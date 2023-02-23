@@ -4,6 +4,28 @@ server:
   servlet:
     context-path: /
 spring:
+  #rabbit配置
+  rabbitmq:
+    username: root
+    password: 123456
+    port: 5672
+    host: 192.168.126.131
+    listener:
+      direct:
+        prefetch: 1
+  #文件上传工具配置
+  file-storage: #文件存储配置
+    default-platform: tencent-cos-1 #默认使用的存储平台
+    thumbnail-suffix: ".min.jpg" #缩略图后缀，例如【.min.jpg】【.png】
+    tencent-cos: # 腾讯云 COS
+      - platform: tencent-cos-1 # 存储平台标识
+        enable-storage: true  # 启用存储
+        secret-id: AKIDztnmaFj3A5wc9WhkfQ0Rs68xa0DEE5mT
+        secret-key: sa6PXTDk5EAuWv8B2UuAF9tSp8JI5iDc
+        region: ap-nanjing #存仓库所在地域
+        bucket-name: emos-1307368688
+        domain: https://emos-1307368688.cos.ap-nanjing.myqcloud.com/ # 访问域名，注意“/”结尾，例如：https://abc.cos.ap-nanjing.myqcloud.com/
+        base-path: order_online/ # 基础路径
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -36,23 +58,14 @@ spring:
               class: com.sun.mail.util.MailSSLSocketFactory
               fallback: false
     default-encoding: utf-8
+  elasticsearch:
+    uris: http://192.168.126.131:9200
+
 #mybatis-plus配置
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
-tencent:
-  cloud:
-    appId: 1307368688
-    secretId: AKIDztnmaFj3A5wc9WhkfQ0Rs68xa0DEE5mT
-    secretKey: sa6PXTDk5EAuWv8B2UuAF9tSp8JI5iDc
-    region: ap-nanjing
-    bucket: emos-1307368688
-    arrow:
-      - .jpg
-      - .png
-      - .jpeg
-    size: 10485760
 
 
 

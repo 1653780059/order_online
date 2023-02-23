@@ -11,11 +11,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
+
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
+
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +59,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         loginDetails.setRoot(user.getRoot().equals(1));
         return loginDetails;
     }
-
+    /**
+     * 密码验证和失败次数限制
+     */
     private void assertPassword(String failKey,String password) {
         String loginPassword = (String)AuthenticationHolder.getAuthentication().getCredentials();
         if (!passwordEncoder.matches(loginPassword,password)){
@@ -69,6 +71,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             redisUtil.increment(failKey);
             if((Integer)redisUtil.vGet(failKey)>=RedisConstant.LOGIN_FAIL_MAX_COUNT){
                 redisUtil.setEx(failKey,RedisConstant.LOGIN_FAIL_EX,TimeUnit.MINUTES);
+
                 throw new RuntimeException("重试次数过多十分钟后重试");
             }
 

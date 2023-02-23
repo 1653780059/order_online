@@ -18,6 +18,8 @@
             <result property="enable" column="enable" jdbcType="INTEGER"/>
             <result property="roles" column="roles" jdbcType="OTHER"/>
             <result property="root" column="is_root" jdbcType="INTEGER"/>
+            <result property="address" column="address" jdbcType="OTHER"/>
+            <result property="balance" column="balance" javaType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -25,7 +27,7 @@
         nickName,email,img,
         phone,create_time,update_time,
         del,enable,roles,
-        is_root
+        is_root,address,balance
     </sql>
     <select id="getPermissions" resultType="java.lang.String">
         select m.permission from user u left join role r on json_contains(u.roles,convert(r.id,char)) left join menu m on json_contains(r.permissions,convert(m.id,char))

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.order_online.mapper.ShopMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.order_online.pojo.domain.Shop">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="provide" column="provide" jdbcType="OTHER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="own" column="own" jdbcType="VARCHAR"/>
+            <result property="vip" column="vip" jdbcType="OTHER"/>
+            <result property="vipDiscount" column="vip_discount" jdbcType="DOUBLE"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+    </resultMap>
+    <resultMap id="queryMap" type="com.example.order_online.pojo.domain.Shop">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="provide" column="provide" jdbcType="OTHER"/>
+        <result property="own" column="own" jdbcType="VARCHAR"/>
+        <result property="vip" column="vip" jdbcType="OTHER"/>
+        <result property="vipDiscount" column="vip_discount" jdbcType="DOUBLE"/>
+        <result property="score" column="score" jdbcType="DOUBLE"/>
+        <collection property="goodsName"  ofType="string" javaType="list">
+            <result column="goodsName"/>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,address,
+        type,provide,create_time,
+        update_time,create_by,update_by,
+        own,vip,vip_discount,
+        score
+    </sql>
+    <select id="getShopAndGoodsName" resultMap="com.example.order_online.mapper.ShopMapper.queryMap">
+        select s.id,s.name,s.address,
+               s.type,s.provide,
+               s.own,s.vip,s.vip_discount,g.name as goodsName,
+               score from shop s join goods g on s.id=g.shop
+        where s.id=#{id}
+
+    </select>
+
+</mapper>
