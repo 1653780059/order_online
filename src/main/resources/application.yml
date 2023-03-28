@@ -7,12 +7,13 @@ spring:
   #rabbit配置
   rabbitmq:
     username: root
-    password: 123456
+    password: 123321
     port: 5672
-    host: 192.168.126.131
+    #host: 192.168.126.131
     listener:
       direct:
         prefetch: 1
+    host: 39.98.73.37
   #文件上传工具配置
   file-storage: #文件存储配置
     default-platform: tencent-cos-1 #默认使用的存储平台
@@ -38,8 +39,9 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://localhost:3306/order_online?serverTimezone=GMT%2B8&characterEncoding=utf8
+    #redis
   redis:
-    host: 192.168.126.150
+    host: 39.98.73.37
     password: 123321
   #邮件配置
   mail:
@@ -59,13 +61,21 @@ spring:
               fallback: false
     default-encoding: utf-8
   elasticsearch:
-    uris: http://192.168.126.131:9200
+    uris: http://39.98.73.37:9200
 
 #mybatis-plus配置
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+#wxpay:
+  #notify-domain: 
+redission:
+  redisHost: 39.98.73.37
 
 
 

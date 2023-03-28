@@ -15,10 +15,10 @@ import javax.validation.constraints.Pattern;
 @Data
 public class LoginForm {
     @NotBlank(message = "用户名不能为空")
-    @Pattern(regexp = "^[a-zA-Z0-9_-]{4,16}$",message = "用户名错误")
+    @Pattern(regexp = "^[a-zA-Z0-9]{3,16}$",message = "用户名错误")
     private String username;
     @NotBlank(message = "密码不能为空")
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[A-Za-z0-9]{8,18}$",message = "密码错误")
+    @Pattern(regexp = "^[A-Za-z0-9]{6,18}$",message = "密码错误")
     private String password;
     @NotBlank(message = "验证码不能为空")
     private String verification;

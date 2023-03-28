@@ -20,6 +20,7 @@
             <result property="root" column="is_root" jdbcType="INTEGER"/>
             <result property="address" column="address" jdbcType="OTHER"/>
             <result property="balance" column="balance" javaType="INTEGER"/>
+        <result property="shop" column="shop" jdbcType="OTHER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -27,10 +28,68 @@
         nickName,email,img,
         phone,create_time,update_time,
         del,enable,roles,
-        is_root,address,balance
+        is_root,address,balance,shop
     </sql>
+    <update id="setUserJoinUsFlag">
+        update user set roles= json_array_append(roles,'$',-1) where id=#{userId}
+    </update>
+
     <select id="getPermissions" resultType="java.lang.String">
         select m.permission from user u left join role r on json_contains(u.roles,convert(r.id,char)) left join menu m on json_contains(r.permissions,convert(m.id,char))
         where u.username=#{username} and u.enable=1 and u.del=0;
+    </select>
+    <select id="getUserListCount" resultType="java.lang.Integer">
+        select  count(*)
+        from user u
+        <where>
+            u.del=0
+            <if test="email!=null">
+                and email=#{email}
+            </if>
+            <if test="phone!=null">
+                and phone=#{phone}
+            </if>
+            <if test="username!=null">
+                and username=#{username}
+            </if>
+        </where>
+    </select>
+    <select id="getUserList" resultType="java.util.Map">
+        select  id,username,
+                nickName,email,
+                phone,
+                enable,
+               (select group_concat(r.role_name) from role r where json_contains(u.roles,convert(r.id,char))) as roleName,
+               roles,
+               balance,
+               (select  group_concat(s.name) from shop s where json_contains(u.shop,convert(s.id,char))) as shopName
+        from user u
+        <where>
+            u.del=0
+            <if test="email!=null">
+                and email=#{email}
+            </if>
+            <if test="phone!=null">
+                and phone=#{phone}
+            </if>
+            <if test="username!=null">
+                and username=#{username}
+            </if>
+        </where>
+        limit #{start},10
+    </select>
+    <select id="getUserNameByRoleId" resultType="java.lang.String">
+        select username from user where json_contains(roles,convert(#{roleId},char))
+    </select>
+    <select id="getJoinUsById" resultType="java.lang.Integer">
+        SELECT count(*) FROM `user` where json_contains(roles,'-1') and id=#{userId}
+    </select>
+    <select id="joinUsConfirmList" resultType="java.util.Map">
+        SELECT id,username,nickName,(select group_concat(role_name) from role where json_contains(user.roles,convert(role.id,char))) as roleName
+        FROM `user` where json_contains(roles,'-1')  limit #{start},10
+    </select>
+    <select id="joinUsConfirmListCount" resultType="int">
+        SELECT count(*)
+        FROM `user` where json_contains(roles,'-1')
     </select>
 </mapper>

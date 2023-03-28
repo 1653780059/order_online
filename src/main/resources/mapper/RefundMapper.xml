@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.order_online.mapper.RefundMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.order_online.pojo.domain.Refund">
+
+            <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
+            <result property="refundNo" column="refund_no" jdbcType="VARCHAR"/>
+            <result property="refundStatus" column="refund_status" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="reason" column="reason" jdbcType="VARCHAR"/>
+            <result property="contentReturn" column="content_return" jdbcType="VARCHAR"/>
+            <result property="contentNotify" column="content_notify" jdbcType="VARCHAR"/>
+        <result property="productId" column="product_id" jdbcType="OTHER"/>
+        <result property="shop" column="shop" jdbcType="INTEGER"/>
+        <result property="totalFee" column="total_fee" jdbcType="DOUBLE"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        order_no,refund_no,
+        refund_status,create_time,update_time,
+        reason,content_return,content_notify,product_id,shop,total_fee
+    </sql>
+    <select id="getRefundByUserId" resultType="hashmap">
+        select order_no,refund_no,refund_status,reason,refund.total_fee,reason,
+               (select group_concat(name) from goods where json_contains(refund.product_id,convert(goods.id,char ))) as goodsName,
+               (select shop.name from shop where refund.shop=shop.id) as shopName
+        from refund join (select shop from user u <if test="root!=1">where u.id=#{userId}</if>) as s on
+            json_contains(s.shop,convert(refund.shop,char))
+        <if test="root!=1"> where  refund_status!='SUCCESS'</if>
+
+
+
+    </select>
+    <select id="getRefundByUserIdCount" resultType="java.lang.Long">
+        select count(*) from refund join (select shop from user u <if test="root!=0">where u.id=#{userId}</if>) as s on
+            json_contains(s.shop,convert(refund.shop,char))
+         <if test="root!=1"> where refund_status!='SUCCESS'</if>
+    </select>
+</mapper>

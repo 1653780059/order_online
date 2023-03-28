@@ -16,6 +16,7 @@
             <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
             <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
             <result property="shop" column="shop" jdbcType="INTEGER"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -24,5 +25,35 @@
         create_time,update_time,create_by,
         update_by,shop
     </sql>
+    <select id="getGoodsList" resultType="map">
+        SELECT g.id,name,price,des,type,g.shop,
+               (select name from shop where g.shop=shop.id) as shopName
+        FROM `user` u join `goods` g on json_contains(u.shop,convert(g.shop,char))
+        <where>
+            1=1
+            <if test="root!=1">
+              and  u.id=#{userId}
+            </if>
 
+            <if test="search!=null">
+            and g.shop=#{search}
+            </if>
+        </where>
+        order by g.shop
+        limit #{start},10;
+    </select>
+    <select id="getGoodsListCount" resultType="integer">
+        SELECT count(*)
+        FROM `user` u join `goods` g on json_contains(u.shop,convert(g.shop,char))
+    <where>
+        1=1
+        <if test="root!=1">
+            and u.id=#{userId}
+        </if>
+
+        <if test="search!=null">
+            and g.shop=#{search}
+        </if>
+    </where>
+    </select>
 </mapper>

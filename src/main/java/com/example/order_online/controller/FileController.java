@@ -39,7 +39,6 @@ public class FileController {
         ALLOW_FILE_TYPE.add(".gif");
         ALLOW_FILE_TYPE.add(".jpeg");
     }
-    @PreAuthorize("hasAnyAuthority('root')")
     @PostMapping("/upload")
     public Result fileUpload(MultipartFile file){
 
@@ -48,7 +47,7 @@ public class FileController {
         assertFile(ext);
         String path = doUpload(file,ext);
         log.info(path);
-        return Result.success("上传成功");
+        return Result.success("上传成功").put("img",path);
     }
 
     private void assertFile(String ext) {

@@ -1,8 +1,11 @@
 package com.example.order_online.service;
 
+import com.example.order_online.controller.form.*;
 import com.example.order_online.pojo.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.order_online.pojo.dto.Result;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,4 +16,26 @@ import java.util.Set;
 public interface UserService extends IService<User> {
 
     Set<String> getPermissions(String username);
+
+    Result getUserInfoById(Integer id);
+
+    Result emailChange(ChangeEmailForm form);
+
+    Result getUserShop();
+
+    Result getUserList(UserListForm form);
+
+    Result changeStatus(boolean parseBoolean, String userId);
+
+    Result deleteUser(String userId);
+
+    Result updateUser(UpdateUserForm form);
+
+    List<String> getUserNameByRoleId(Integer id);
+
+    Result joinUs();
+
+    Result joinUsConfirm(JoinUsConfirmForm form);
+
+    Result joinUsConfirmList(JoinUsConfirmListForm form);
 }

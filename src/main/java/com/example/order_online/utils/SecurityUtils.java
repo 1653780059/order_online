@@ -19,6 +19,10 @@ import java.util.Set;
 public class SecurityUtils {
 
     private static LoginDetails getLoginDetails(){
+        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String)
+        {
+            throw new RuntimeException("用户未登录");
+        }
         return (LoginDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
     public static User getLoginUser(){

@@ -44,50 +44,46 @@ public class ShopDoc {
      */
     private Integer type;
 
-    /**
-     * 提供的商品
-     */
-    private Object provide;
+
 
     /**
      * 店铺拥有者
      */
     private String own;
 
-    /**
-     * 店铺vip客户
-     */
-    private Object vip;
-
-    /**
-     * vip折扣例如 9.5:九点五折
-     */
-    private Double vipDiscount;
 
     /**
      * 评分，5分为最高
      */
     private Double score;
     /**
+     * 支付的广告费
+     */
+    private Double payment;
+    /**
      * 自动补全字段
      */
     private List<String> auto;
-    private String goodsName;
+    private String desc;
+    private String img;
     public ShopDoc(Shop shop){
 
         this.id=shop.getId();
+        this.payment=shop.getPayment();
         this.name=shop.getName();
         this.address=shop.getAddress();
         this.own=shop.getOwn();
-        this.provide= shop.getProvide();
-        this.vip=shop.getVip();
-        this.vipDiscount=shop.getVipDiscount();
         this.score=shop.getScore();
         this.type=shop.getType();
         this.auto=new ArrayList<>();
         auto.addAll(shop.getGoodsName());
         auto.add(this.name);
         auto.add(this.address);
-        this.goodsName=shop.getGoodsName().toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        this.auto.forEach(item->{
+            stringBuilder.append(item).append(",");
+        });
+        this.desc=stringBuilder.toString();
+        this.img=shop.getImg();
     }
 }

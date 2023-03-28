@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import javax.validation.constraints.Email;
 
 /**
  * 
@@ -16,6 +20,7 @@ import lombok.ToString;
 @Data
 @ToString
 @EqualsAndHashCode
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Serializable {
     /**
      * 
@@ -92,6 +97,8 @@ public class User implements Serializable {
      * 余额
      */
     private Integer balance;
+
+    private Object shop;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

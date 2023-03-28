@@ -2,9 +2,11 @@ package com.example.order_online.mapper;
 
 import com.example.order_online.pojo.domain.Goods;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.order_online.pojo.domain.Shop;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author 16537
@@ -13,7 +15,8 @@ import java.util.List;
 * @Entity com.example.order_online.pojo.domain.Goods
 */
 public interface GoodsMapper extends BaseMapper<Goods> {
-
+    List<HashMap<String,Object>> getGoodsList(Map<String, Object> map);
+    Integer getGoodsListCount(Map<String, Object> map);
 }
 
 

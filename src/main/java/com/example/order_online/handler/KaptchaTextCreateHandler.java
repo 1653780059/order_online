@@ -19,22 +19,19 @@ public class KaptchaTextCreateHandler implements TextProducer {
     @Override
     public String getText() {
         StringBuilder text = new StringBuilder();
-        int i = RandomUtil.randomInt(0, 4);
+        int i = RandomUtil.randomInt(0, 2);
         int num1 = RandomUtil.randomInt(0, 10);
         int num2 = RandomUtil.randomInt(0, 10);
-        text.append(num1);
         switch (i){
             case 0:
-                text.append("+").append(num2).append("=").append(num1+num2);
+                text.append(num1).append("+").append(num2).append("=").append(num1+num2);
                 break;
             case 1:
-                text.append("-").append(num2).append("=").append(num1-num2);
-                break;
-            case 2:
-                text.append("x").append(num2).append("=").append(num1*num2);
-                break;
-            case 3:
-                text.append("/").append(num2).append("=").append(num1/num2);
+                if (num1>num2){
+                    text.append(num1).append("-").append(num2).append("=").append(num1-num2);
+                }else{
+                    text.append(num2).append("-").append(num1).append("=").append(num2-num1);
+                }
                 break;
             default:break;
         }

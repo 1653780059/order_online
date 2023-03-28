@@ -9,14 +9,13 @@
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="address" column="address" jdbcType="VARCHAR"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
-            <result property="provide" column="provide" jdbcType="OTHER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
             <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
             <result property="own" column="own" jdbcType="VARCHAR"/>
-            <result property="vip" column="vip" jdbcType="OTHER"/>
-            <result property="vipDiscount" column="vip_discount" jdbcType="DOUBLE"/>
+        <result property="payment" column="payment" jdbcType="DOUBLE"/>
             <result property="score" column="score" jdbcType="DOUBLE"/>
     </resultMap>
     <resultMap id="queryMap" type="com.example.order_online.pojo.domain.Shop">
@@ -24,11 +23,11 @@
         <result property="name" column="name" jdbcType="VARCHAR"/>
         <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="type" column="type" jdbcType="INTEGER"/>
-        <result property="provide" column="provide" jdbcType="OTHER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="own" column="own" jdbcType="VARCHAR"/>
-        <result property="vip" column="vip" jdbcType="OTHER"/>
-        <result property="vipDiscount" column="vip_discount" jdbcType="DOUBLE"/>
+        <result property="payment" column="payment" jdbcType="DOUBLE"/>
         <result property="score" column="score" jdbcType="DOUBLE"/>
+        <result property="img" column="img" jdbcType="VARCHAR"/>
         <collection property="goodsName"  ofType="string" javaType="list">
             <result column="goodsName"/>
         </collection>
@@ -36,18 +35,44 @@
 
     <sql id="Base_Column_List">
         id,name,address,
-        type,provide,create_time,
+        type,create_time,
         update_time,create_by,update_by,
-        own,vip,vip_discount,
+        own,payment,
         score
     </sql>
-    <select id="getShopAndGoodsName" resultMap="com.example.order_online.mapper.ShopMapper.queryMap">
+        <update id="updateUserShop">
+            update user set shop = json_array_append(shop,'$',#{shopId}) where id=#{userId}
+        </update>
+    <select id="getShopAndGoodsNameById" resultMap="com.example.order_online.mapper.ShopMapper.queryMap">
         select s.id,s.name,s.address,
-               s.type,s.provide,
-               s.own,s.vip,s.vip_discount,g.name as goodsName,
-               score from shop s join goods g on s.id=g.shop
+               s.type,
+               s.own,s.payment,(select group_concat(g.name) from goods g where g.shop=s.id) as goodsName,
+               score from shop s
         where s.id=#{id}
 
+    </select>
+    <select id="getAllShopAndGoodsName" resultMap="com.example.order_online.mapper.ShopMapper.queryMap">
+        select s.id,s.name,s.address,
+               s.type,
+               s.own,s.payment,g.name as goodsName,
+               score from shop s join goods g on s.id=g.shop where s.`status`!=0
+
+    </select>
+    <select id="getUserShop" resultType="map">
+        select  s.id as value,s.name as label from user u join shop s on json_contains(u.shop,convert(s.id,char))
+        where   s.status=1 <if test="root!=1"> and u.id=#{userId}</if>
+    </select>
+    <select id="getShopList" resultType="java.util.Map">
+        select id,name,address,type,`status` from shop where   <if test="root!=1">  own=#{userId}</if> limit #{start},10;
+    </select>
+    <select id="getShopListCount" resultType="java.lang.Integer">
+        select count(*) from shop  where   <if test="root!=1"> own=#{userId}</if>;
+    </select>
+    <select id="getShopConfirmList" resultType="java.util.Map">
+        select id,name,address,type,(select username from user where user.id=shop.own) ownName from shop where status=0 limit #{start},10;
+    </select>
+    <select id="getShopConfirmListCount" resultType="java.lang.Integer">
+        select count(*) from shop where status=0;
     </select>
 
 </mapper>

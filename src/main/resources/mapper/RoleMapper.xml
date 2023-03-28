@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.order_online.mapper.RoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.order_online.pojo.domain.Role">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+            <result property="permissions" column="permissions" jdbcType="OTHER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="systemctl" column="systemctl" jdbcType="INTEGER"/>
+            <result property="createBy" column="create_by" jdbcType="INTEGER"/>
+            <result property="updateBy" column="update_by" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,role_name,permissions,
+        create_time,update_time,systemctl,
+        create_by,update_by
+    </sql>
+    <select id="getMenuTree" resultType="com.example.order_online.pojo.dto.TreeDto">
+        select id,name as label  from menu m1 where parent=#{parent}
+    </select>
+    <select id="getRoleList" resultType="java.util.Map">
+        select id,role_name as roleName, (select username from user where user.id=r.create_by)as createBy,
+        (select concat('[',group_concat(m.id) ,']')from menu m where json_contains(r.permissions,convert(m.id,char)) and m.id not in (select m1.id from menu m1 where parent=-1 and (select count(*) from menu m2 where m2.parent=m1.id ) >0) ) as permissions
+        ,systemctl
+        from role r
+        <where>
+            1=1
+            <if test="systemctl!=null">
+                and systemctl=#{systemctl}
+            </if>
+            <if test="roleName!=null">
+                and role_name=#{roleName}
+            </if>
+        </where>
+        limit #{start},10
+    </select>
+    <select id="getRoleListCount" resultType="java.lang.Integer">
+        select count(*) from role
+        <where>
+            1=1
+            <if test="#{systemctl}!=null">
+                and systemctl=#{systemctl}
+            </if>
+            <if test="#{roleName}!=null">
+                and role_name=#{roleName}
+            </if>
+        </where>
+
+    </select>
+</mapper>

@@ -1,10 +1,12 @@
 package com.example.order_online.utils;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +21,12 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
     @Resource
     private RedisTemplate<String,Object> redisTemplate;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+    public Map<Object, Object> hEntries(String key){
+        return redisTemplate.opsForHash().entries(key);
 
+    }
     public void vSet(String key,Object value){
         redisTemplate.opsForValue().set(key,value);
     }
@@ -47,13 +54,16 @@ public class RedisUtil {
         return redisTemplate.opsForValue().setIfAbsent(key,value,time,timeUnit);
     }
     public Set<String> keys(String pattern){
-        return redisTemplate.keys(pattern);
+        return stringRedisTemplate.keys(pattern);
     }
     public Boolean hasKey(String key){
         return redisTemplate.hasKey(key);
     }
     public Boolean delete(String key){
         return redisTemplate.delete(key);
+    }
+    public Long hDelete(String key,String hashKey){
+        return redisTemplate.opsForHash().delete(key,hashKey);
     }
     public Long delete(Collection<String> keys){
         return redisTemplate.delete(keys);
@@ -67,5 +77,15 @@ public class RedisUtil {
     public Long increment(String key){
         return redisTemplate.opsForValue().increment(key);
     }
+    public Object hGet(String key, String hashKey){
+        return redisTemplate.opsForHash().get(key,hashKey);
+    }
 
+    public void hSet(String key,Object hashKey,Object value) {
+        redisTemplate.opsForHash().put(key,hashKey,value);
+    }
+
+    public void hIncrement(String key, String goodsId,Long inc) {
+        redisTemplate.opsForHash().increment(key,goodsId,inc);
+    }
 }

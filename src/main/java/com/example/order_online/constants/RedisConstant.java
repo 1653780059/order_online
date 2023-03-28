@@ -29,4 +29,7 @@ public class RedisConstant {
     public static final long LOGIN_FAIL_EX = 10;
     //登录失败上限次数
     public static final Integer LOGIN_FAIL_MAX_COUNT = 5;
+    public static final String CART_PRE = "cart:";
+    public static final String CODE_URL = "codeUrl:";
+    public static final String EMAIL_VERIFICATION = "email:verification:";
 }

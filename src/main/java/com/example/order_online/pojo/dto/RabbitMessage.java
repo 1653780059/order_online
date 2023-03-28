@@ -15,7 +15,7 @@ import java.util.HashMap;
  */
 @AllArgsConstructor
 @Data
-public class RabbitMessage {
+public final class RabbitMessage {
 
     public static String getESMsg(String index,String id){
         HashMap<String, Object> map = new HashMap<>();

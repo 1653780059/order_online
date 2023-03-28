@@ -1,9 +1,7 @@
 package com.example.order_online.pojo.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -42,19 +40,18 @@ public class Shop implements Serializable {
      */
     private Integer type;
 
-    /**
-     * 提供的商品
-     */
-    private Object provide;
 
     /**
      * 创建时间
      */
+    @TableField(fill= FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @TableField(fill= FieldFill.INSERT_UPDATE)
+
     private Date updateTime;
 
     /**
@@ -66,26 +63,25 @@ public class Shop implements Serializable {
      * 修改者
      */
     private String updateBy;
-
+    /**
+     * 商店图片
+     */
+    private String img;
     /**
      * 店铺拥有者
      */
     private String own;
 
     /**
-     * 店铺vip客户
-     */
-    private Object vip;
-
-    /**
-     * vip折扣例如 9.5:九点五折
-     */
-    private Double vipDiscount;
-
-    /**
      * 评分，5分为最高
      */
     private Double score;
+
+    private Integer status;
+    /**
+     * 支付的广告费
+     */
+    private Double payment;
     @TableField(exist = false)
     private List<String> goodsName;
 

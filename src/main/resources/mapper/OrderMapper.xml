@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.order_online.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.order_online.pojo.domain.Order">
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="productId" column="product_id" jdbcType="OTHER"/>
+            <result property="totalFee" column="total_fee" jdbcType="DOUBLE"/>
+            <result property="codeUrl" column="code_url" jdbcType="VARCHAR"/>
+            <result property="orderStatus" column="order_status" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="transactionId" column="transaction_id" jdbcType="VARCHAR"/>
+            <result property="tradeType" column="trade_type" jdbcType="VARCHAR"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="tradeState" column="trade_state" jdbcType="VARCHAR"/>
+            <result property="productCount" column="product_count" jdbcType="OTHER"/>
+             <result property="shop" column="shop" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        title,order_no,
+        user_id,product_id,total_fee,
+        code_url,order_status,create_time,
+        update_time,transaction_id,trade_type,
+        content,trade_state,product_count,shop
+    </sql>
+    <select id="getOrderList" resultType="hashmap">
+        select title,order_no,
+               (select group_concat(g.name) from  goods g where  json_contains(o.product_id,convert(g.id,char))) as goodsName ,
+               o.product_count,
+               (select shop.name from shop where o.shop=shop.id) as shopName,
+               o.shop,o.total_fee,o.order_status
+        from
+            `order` o
+        order by o.create_time desc
+        limit #{start},#{size}
+    </select>
+    <select id="getCartOrderTotalMoney" resultType="int">
+        select sum(total_fee) from `order` where order_no=#{orderNo}
+    </select>
+</mapper>

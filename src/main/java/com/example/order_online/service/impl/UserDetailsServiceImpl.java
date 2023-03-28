@@ -39,11 +39,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String failKey=RedisConstant.LOGIN_FAIL_PRE+username;
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username",username).eq("enable",1).eq("del",0);
+        queryWrapper.eq("username",username).eq("del",0);
         User user = userService.getOne(queryWrapper);
         if(Objects.isNull(user)){
             redisUtil.vSet(RedisConstant.USERNAME_NOTFOUND_PRE+username,1,RedisConstant.USERNAME_NOTFOUND_EX, TimeUnit.MINUTES);
             throw new RuntimeException("用户不存在");
+        }
+        if (user.getEnable()==0){
+            throw new RuntimeException("用户状态异常，请联系管理员");
         }
         if (Objects.nonNull(redisUtil.vGet(failKey))) {
             if((Integer)redisUtil.vGet(failKey)>=RedisConstant.LOGIN_FAIL_MAX_COUNT){
