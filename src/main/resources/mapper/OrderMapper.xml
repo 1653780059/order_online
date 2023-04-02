@@ -20,6 +20,7 @@
             <result property="tradeState" column="trade_state" jdbcType="VARCHAR"/>
             <result property="productCount" column="product_count" jdbcType="OTHER"/>
              <result property="shop" column="shop" jdbcType="INTEGER"/>
+        <result property="finished" column="finished" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -34,7 +35,7 @@
                (select group_concat(g.name) from  goods g where  json_contains(o.product_id,convert(g.id,char))) as goodsName ,
                o.product_count,
                (select shop.name from shop where o.shop=shop.id) as shopName,
-               o.shop,o.total_fee,o.order_status
+               o.shop,o.total_fee,o.order_status,finished
         from
             `order` o
         order by o.create_time desc

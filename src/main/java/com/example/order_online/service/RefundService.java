@@ -15,4 +15,6 @@ public interface RefundService extends IService<Refund> {
     void createRefund(RefundForm form);
 
     Result getRefundListByUserId();
+
+    Result getRefundCount();
 }

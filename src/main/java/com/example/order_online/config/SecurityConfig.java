@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //跨域 预检查  需要放行所有OPTIONS操作
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 //.antMatchers("/**").permitAll()
-                .antMatchers("/sys/login","/sys/verification","/user/checkUserName","/sys/uploadUserImg","/user/register").anonymous()
+                .antMatchers("/sys/login","/sys/verification","/user/checkUserName","/sys/uploadUserImg","/user/register/*").anonymous()
                 .antMatchers("/es/**/*","/sys/logout","/file/upload","/sys/email/verification","/socket/**").permitAll()
                 .antMatchers("/wx/native/notify","/wx/refunds/notify").anonymous()
                 //放行静态资源和swagger资源

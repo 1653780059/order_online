@@ -9,21 +9,18 @@ import com.example.order_online.constants.RedisConstant;
 import com.example.order_online.controller.form.*;
 import com.example.order_online.pojo.domain.User;
 import com.example.order_online.pojo.dto.Result;
-import com.example.order_online.service.RoleService;
 import com.example.order_online.service.ShopService;
 import com.example.order_online.service.UserService;
 import com.example.order_online.mapper.UserMapper;
 import com.example.order_online.utils.MailUtils;
 import com.example.order_online.utils.RedisUtil;
 import com.example.order_online.utils.SecurityUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
 * @author 16537
@@ -188,6 +185,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         List<Map<String,Object>> list = baseMapper.joinUsConfirmList(param);
         int total = baseMapper.joinUsConfirmListCount(param);
         return Result.success(list).put("total",total);
+    }
+    @Resource
+    private BCryptPasswordEncoder passwordEncoder;
+    @Override
+    @Transactional
+    public Result register(User user, String code) {
+        if(Objects.isNull(code)){
+            throw new RuntimeException("邮箱验证码不为空");
+        }
+        String key = RedisConstant.USERNAME_NOTFOUND_PRE+user.getUsername();
+        redisUtil.delete(key);
+        final String codeKey = RedisConstant.EMAIL_VERIFICATION + user.getEmail();
+        if (!code.toUpperCase(Locale.ROOT).equals(redisUtil.vGet(codeKey))){
+            throw new RuntimeException("邮箱验证码错误");
+        }
+        final Long username = baseMapper.selectCount(new QueryWrapper<User>().eq("username", user.getUsername()));
+        if (username!=0){
+            throw new RuntimeException("用户名已被注册，请修改用户名");
+        }
+        user.setEnable(1);
+        user.setDel(0);
+        user.setRoot(0);
+        user.setRoles("[1]");
+        user.setBalance(0);
+        user.setShop("[]");
+        user.setAddress("[\""+user.getAddress()+"\"]");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        final int row = baseMapper.insert(user);
+        if (row!=1){
+            throw new RuntimeException("注册失败");
+        }
+        return Result.success("注册成功");
     }
 
 }

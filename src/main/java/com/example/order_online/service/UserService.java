@@ -38,4 +38,6 @@ public interface UserService extends IService<User> {
     Result joinUsConfirm(JoinUsConfirmForm form);
 
     Result joinUsConfirmList(JoinUsConfirmListForm form);
+
+    Result register(User user, String code);
 }

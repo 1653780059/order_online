@@ -7,7 +7,9 @@ import com.example.order_online.pojo.dto.Result;
 import com.example.order_online.service.UserService;
 import com.example.order_online.utils.SecurityUtils;
 import org.apache.ibatis.annotations.Delete;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -25,6 +27,7 @@ import javax.validation.Valid;
 public class UserController {
     @Resource
     private UserService userService;
+
     @PreAuthorize("hasAnyAuthority('root','user:getById')")
     @GetMapping("/getById")
     public Result getUserInfoById(){
@@ -83,5 +86,9 @@ public class UserController {
     @PostMapping("/shop/confirm/list")
     public Result joinUsConfirmList(@RequestBody JoinUsConfirmListForm form){
         return userService.joinUsConfirmList(form);
+    }
+    @PostMapping("/register/{code}")
+    public Result register(@RequestBody @Valid User user, @PathVariable String code){
+        return userService.register(user,code);
     }
 }

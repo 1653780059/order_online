@@ -55,8 +55,7 @@
         select s.id,s.name,s.address,
                s.type,
                s.own,s.payment,g.name as goodsName,
-               score from shop s join goods g on s.id=g.shop where s.`status`!=0
-
+               score from shop s left join goods g on s.id=g.shop where s.`status`!=0
     </select>
     <select id="getUserShop" resultType="map">
         select  s.id as value,s.name as label from user u join shop s on json_contains(u.shop,convert(s.id,char))

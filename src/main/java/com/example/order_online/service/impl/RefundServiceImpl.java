@@ -62,6 +62,12 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund>
         final Long count = baseMapper.getRefundByUserIdCount(SecurityUtils.getLoginUser().getId(),SecurityUtils.getLoginUser().getRoot());
         return Result.success(list).put("total",count);
     }
+
+    @Override
+    public Result getRefundCount() {
+        final Long count = baseMapper.getRefundByUserIdCount(SecurityUtils.getLoginUser().getId(), SecurityUtils.getLoginUser().getRoot());
+        return Result.success(count);
+    }
 }
 
 

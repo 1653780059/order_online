@@ -160,6 +160,9 @@ public class PayServiceImpl implements PayService {
         if (refund.getRefundStatus().equals(WxTradeState.SUCCESS.getType())){
             throw new RuntimeException("退款已经成功,无需重复退款");
         }
+        if (refund.getRefundStatus().equals(WxTradeState.REFUND.getType())){
+            throw new RuntimeException("退款中,请耐心等待");
+        }
         String url = wxPayConfig.getDomain()+WxApiType.DOMESTIC_REFUNDS.getType();
         final HttpPost request = new HttpPost(url);
         final int totalMoney = orderService.getCartOrderTotalMoney(refund.getOrderNo());

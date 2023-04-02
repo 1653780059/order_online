@@ -11,6 +11,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * 
@@ -31,31 +34,36 @@ public class User implements Serializable {
     /**
      * 用户名
      */
+    @NotBlank(message = "用户名不能为空")
+    @Pattern(regexp = "^[a-zA-Z0-9]{3,16}$",message = "用户名错误")
     private String username;
-
-    /**
-     * 密码
-     */
+    @NotBlank(message = "密码不能为空")
+    @Pattern(regexp = "^[A-Za-z0-9]{6,18}$",message = "密码错误")
     private String password;
 
     /**
      * 昵称
      */
+    @NotNull
     private String nickname;
 
     /**
      * 邮箱地址
      */
+    @Email
+    @NotNull
     private String email;
 
     /**
      * 用户头像地址
      */
+    @NotBlank
     private String img;
 
     /**
      * 用户手机号
      */
+    @NotBlank
     private String phone;
 
     /**
@@ -92,6 +100,7 @@ public class User implements Serializable {
     /**
      * 收获地址
      */
+    @NotBlank
     private String address;
     /**
      * 余额

@@ -21,6 +21,7 @@ public class Order implements Serializable {
      * 
      */
 
+    private Integer finished;
     private Integer shop;
     /**
      * 订单描述

@@ -30,13 +30,13 @@
                (select shop.name from shop where refund.shop=shop.id) as shopName
         from refund join (select shop from user u <if test="root!=1">where u.id=#{userId}</if>) as s on
             json_contains(s.shop,convert(refund.shop,char))
-        <if test="root!=1"> where  refund_status!='SUCCESS'</if>
+        <if test="root!=1">  where refund_status!='SUCCESS'</if>
 
 
 
     </select>
     <select id="getRefundByUserIdCount" resultType="java.lang.Long">
-        select count(*) from refund join (select shop from user u <if test="root!=0">where u.id=#{userId}</if>) as s on
+        select count(*) from refund join (select shop from user u <if test="root!=1">where u.id=#{userId}</if>) as s on
             json_contains(s.shop,convert(refund.shop,char))
          <if test="root!=1"> where refund_status!='SUCCESS'</if>
     </select>
