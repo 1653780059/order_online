@@ -1,10 +1,12 @@
 package com.example.order_online.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.order_online.constants.RedisConstant;
 import com.example.order_online.controller.CartController;
+import com.example.order_online.controller.form.OrderFinishedConfirmForm;
 import com.example.order_online.enums.OrderStatus;
 import com.example.order_online.enums.WxTradeState;
 import com.example.order_online.mapper.GoodsMapper;
@@ -59,6 +61,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             order.setProductCount(JSON.toJSONString(entries.values()));
             order.setTradeState(WxTradeState.NOTPAY.getType());
             order.setOrderStatus(OrderStatus.NOTPAY.getType());
+            order.setFinished(0);
             orders.add(order);
         });
         saveBatch(orders);
@@ -70,13 +73,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     @Override
     public Result orderList(Map<String, Object> params) {
         final List<HashMap<String, Object>> orderList = baseMapper.getOrderList(params);
-        final Long count = baseMapper.selectCount(new QueryWrapper<>());
+        final Long count = baseMapper.getOrderListCount(params);
         return Result.success(orderList).put("total",count);
     }
 
     @Override
     public int getCartOrderTotalMoney(String orderNo) {
         return baseMapper.getCartOrderTotalMoney(orderNo);
+    }
+
+    @Override
+    public Result orderFinishedList(Map<String, Object> param) {
+        final List<HashMap<String, Object>> orderList = baseMapper.getOrderFinishedList(param);
+        final Long count = baseMapper.getOrderFinishedListCount(param);
+        return Result.success(orderList).put("total",count);
+    }
+
+    @Override
+    public Result orderFinishedCount(Map<String, Object> param) {
+        final Long count = baseMapper.orderFinishedCount(param);
+        return Result.success(count);
+    }
+
+    @Override
+    @Transactional
+    public Result orderFinishedConfirm(OrderFinishedConfirmForm form) {
+        final Map<String, Object> params = BeanUtil.beanToMap(form);
+
+       int row= baseMapper.orderFinishedConfirm(params);
+       if (row!=1){
+           throw new RuntimeException("确认失败,订单状态异常请刷新重试");
+       }
+       return Result.success("已确认");
     }
 }
 

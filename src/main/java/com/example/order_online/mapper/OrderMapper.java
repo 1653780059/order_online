@@ -17,6 +17,16 @@ public interface OrderMapper extends BaseMapper<Order> {
     List<HashMap<String,Object>> getOrderList(Map param);
 
     int getCartOrderTotalMoney(String orderNo);
+
+    Long getOrderListCount(Map<String, Object> params);
+
+    List<HashMap<String, Object>> getOrderFinishedList(Map<String, Object> param);
+
+    Long getOrderFinishedListCount(Map<String, Object> param);
+
+    int orderFinishedConfirm(Map<String, Object> params);
+
+    Long orderFinishedCount(Map<String, Object> param);
 }
 
 

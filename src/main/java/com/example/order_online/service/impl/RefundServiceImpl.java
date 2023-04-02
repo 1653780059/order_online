@@ -14,11 +14,11 @@ import com.example.order_online.service.RefundService;
 import com.example.order_online.mapper.RefundMapper;
 import com.example.order_online.utils.OrderNoUtil;
 import com.example.order_online.utils.SecurityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.sql.Ref;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,25 +34,34 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund>
     private OrderNoUtil orderNoUtil;
     @Resource
     private OrderService orderService;
+
     @Override
-    public void createRefund(RefundForm form) {
-        final Long count = baseMapper.selectCount(new QueryWrapper<Refund>().eq("order_no", form.getOrderNo()).eq("shop", form.getShop()));
-        if(count!=0){
-            throw new RuntimeException("退款请求已提交");
+    public void createRefund(RefundForm form, RedissonClient redissonClient) {
+        final String refundNo = orderNoUtil.getRefundNo();
+        final RLock lock = redissonClient.getLock("createRefund:" + refundNo);
+        lock.lock();
+        try{
+            final Long count = baseMapper.selectCount(new QueryWrapper<Refund>().eq("order_no", form.getOrderNo()).eq("shop", form.getShop()));
+            if(count!=0){
+                throw new RuntimeException("退款请求已提交");
+            }
+            final Refund refund = new Refund();
+            refund.setOrderNo(form.getOrderNo());
+            refund.setRefundNo(refundNo);
+            refund.setReason(form.getReason());
+            refund.setRefundStatus(WxTradeState.REFUNDING.getType());
+            final Order order = orderService.getOne(new QueryWrapper<Order>().eq("order_no", form.getOrderNo()).eq("shop",form.getShop()).select("product_id","total_fee"));
+            refund.setProductId(order.getProductId());
+            refund.setShop(form.getShop());
+            refund.setTotalFee(order.getTotalFee());
+            final Order updateOrder = new Order();
+            updateOrder.setOrderStatus(OrderStatus.REFUND_PROCESSING.getType());
+            orderService.update(updateOrder,new UpdateWrapper<Order>().eq("order_no", form.getOrderNo()).eq("shop",form.getShop()));
+            baseMapper.insert(refund);
+        }finally {
+            lock.unlock();
         }
-        final Refund refund = new Refund();
-        refund.setOrderNo(form.getOrderNo());
-        refund.setRefundNo(orderNoUtil.getRefundNo());
-        refund.setReason(form.getReason());
-        refund.setRefundStatus(WxTradeState.REFUNDING.getType());
-        final Order order = orderService.getOne(new QueryWrapper<Order>().eq("order_no", form.getOrderNo()).eq("shop",form.getShop()).select("product_id","total_fee"));
-        refund.setProductId(order.getProductId());
-        refund.setShop(form.getShop());
-        refund.setTotalFee(order.getTotalFee());
-        final Order updateOrder = new Order();
-        updateOrder.setOrderStatus(OrderStatus.REFUND_PROCESSING.getType());
-        orderService.update(updateOrder,new UpdateWrapper<Order>().eq("order_no", form.getOrderNo()).eq("shop",form.getShop()));
-        baseMapper.insert(refund);
+
     }
 
     @Override

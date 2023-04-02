@@ -1,5 +1,6 @@
 package com.example.order_online.service;
 
+import com.example.order_online.controller.form.OrderFinishedConfirmForm;
 import com.example.order_online.pojo.domain.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.order_online.pojo.dto.Result;
@@ -18,4 +19,10 @@ public interface OrderService extends IService<Order> {
     Result orderList(Map<String, Object> stringObjectMap);
 
     int getCartOrderTotalMoney(String orderNo);
+
+    Result orderFinishedList(Map<String, Object> param);
+
+    Result orderFinishedCount(Map<String, Object> param);
+
+    Result orderFinishedConfirm(OrderFinishedConfirmForm form);
 }

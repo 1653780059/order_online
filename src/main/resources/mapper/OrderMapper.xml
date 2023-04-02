@@ -30,6 +30,9 @@
         update_time,transaction_id,trade_type,
         content,trade_state,product_count,shop
     </sql>
+    <update id="orderFinishedConfirm">
+        update `order` set finished=1 where order_no=#{orderNo} and trade_state='SUCCESS' and finished=0 and order_status='支付成功'
+    </update>
     <select id="getOrderList" resultType="hashmap">
         select title,order_no,
                (select group_concat(g.name) from  goods g where  json_contains(o.product_id,convert(g.id,char))) as goodsName ,
@@ -38,10 +41,42 @@
                o.shop,o.total_fee,o.order_status,finished
         from
             `order` o
+        where user_id=#{userId}
         order by o.create_time desc
         limit #{start},#{size}
     </select>
     <select id="getCartOrderTotalMoney" resultType="int">
         select sum(total_fee) from `order` where order_no=#{orderNo}
+    </select>
+    <select id="getOrderListCount" resultType="java.lang.Long">
+        select count(*)
+        from
+            `order` o
+        where user_id=#{userId}
+    </select>
+    <select id="getOrderFinishedList" resultType="java.util.HashMap">
+        select title,order_no,
+               (select group_concat(g.name) from  goods g where  json_contains(o.product_id,convert(g.id,char))) as goodsName ,
+               o.product_count,
+               (select shop.name from shop where o.shop=shop.id) as shopName,
+               o.shop,o.total_fee,o.order_status,finished,
+                JSON_EXTRACT(address,'$[0]') as address
+        from
+            `order` o join user u on json_contains(u.shop,convert(o.shop,char )) and u.id=#{userId}
+        where trade_state='SUCCESS' and finished=0 and order_status='支付成功' <if test="search!=null">and o.shop=#{search}</if>
+        order by o.create_time desc
+        limit #{start},10
+    </select>
+    <select id="getOrderFinishedListCount" resultType="java.lang.Long">
+        select count(*)
+        from
+            `order` o join user u on json_contains(u.shop,convert(o.shop,char )) and u.id=#{userId}
+        where trade_state='SUCCESS' and finished=0 and order_status='支付成功'<if test="search!=null">and o.shop=#{search}</if>
+    </select>
+    <select id="orderFinishedCount" resultType="java.lang.Long">
+        select count(*)
+        from
+            `order` o join user u on json_contains(u.shop,convert(o.shop,char )) and u.id=#{userId}
+        where trade_state='SUCCESS' and finished=0 and order_status='支付成功'
     </select>
 </mapper>

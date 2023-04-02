@@ -4,6 +4,7 @@ import com.example.order_online.controller.form.RefundForm;
 import com.example.order_online.pojo.domain.Refund;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.order_online.pojo.dto.Result;
+import org.redisson.api.RedissonClient;
 
 /**
 * @author 16537
@@ -12,7 +13,7 @@ import com.example.order_online.pojo.dto.Result;
 */
 public interface RefundService extends IService<Refund> {
 
-    void createRefund(RefundForm form);
+    void createRefund(RefundForm form, RedissonClient redissonClient);
 
     Result getRefundListByUserId();
 

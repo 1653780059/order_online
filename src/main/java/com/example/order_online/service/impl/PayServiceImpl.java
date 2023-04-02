@@ -149,50 +149,58 @@ public class PayServiceImpl implements PayService {
         if (order==null||!order.getOrderStatus().equals(OrderStatus.SUCCESS.getType())){
             throw new RuntimeException("订单不是支付成功状态，不可以申请退款");
         }
-        refundService.createRefund(form);
+
+        refundService.createRefund(form,redissonClient);
         return Result.success("退款申请已提交，等待商家处理");
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result nativeConfirmRefund(RefundConfirmForm form) {
-        final Refund refund = refundService.getOne(new QueryWrapper<Refund>().eq("refund_no", form.getRefundNo()));
-        if (refund.getRefundStatus().equals(WxTradeState.SUCCESS.getType())){
-            throw new RuntimeException("退款已经成功,无需重复退款");
-        }
-        if (refund.getRefundStatus().equals(WxTradeState.REFUND.getType())){
-            throw new RuntimeException("退款中,请耐心等待");
-        }
-        String url = wxPayConfig.getDomain()+WxApiType.DOMESTIC_REFUNDS.getType();
-        final HttpPost request = new HttpPost(url);
-        final int totalMoney = orderService.getCartOrderTotalMoney(refund.getOrderNo());
-        final HashMap<String, Object> map = new HashMap<>();
-        map.put("out_trade_no",refund.getOrderNo());
-        map.put("out_refund_no",refund.getRefundNo());
-        map.put("reason",refund.getReason()+"@"+refund.getShop());
-        map.put("notify_url",wxPayConfig.getNotifyDomain()+WxNotifyType.REFUND_NOTIFY.getType());
-        final HashMap<String, Object> amount = new HashMap<>();
-        amount.put("total", totalMoney);
-        amount.put("refund",form.getRefundMoney());
-        map.put("amount",amount);
-        amount.put("currency", "CNY");
-        WxPayUtil.setRequestEntity(request,map);
+        final RLock lock = redissonClient.getLock("refundConfirm:" + form.getRefundNo());
+        lock.lock();
+        try {
+            final Refund refund = refundService.getOne(new QueryWrapper<Refund>().eq("refund_no", form.getRefundNo()));
+            if (refund.getRefundStatus().equals(WxTradeState.SUCCESS.getType())){
+                throw new RuntimeException("退款已经成功,无需重复退款");
+            }
+            if (refund.getRefundStatus().equals(WxTradeState.REFUND.getType())){
+                throw new RuntimeException("退款中,请耐心等待");
+            }
+            String url = wxPayConfig.getDomain()+WxApiType.DOMESTIC_REFUNDS.getType();
+            final HttpPost request = new HttpPost(url);
+            final int totalMoney = orderService.getCartOrderTotalMoney(refund.getOrderNo());
+            final HashMap<String, Object> map = new HashMap<>();
+            map.put("out_trade_no",refund.getOrderNo());
+            map.put("out_refund_no",refund.getRefundNo());
+            map.put("reason",refund.getReason()+"@"+refund.getShop());
+            map.put("notify_url",wxPayConfig.getNotifyDomain()+WxNotifyType.REFUND_NOTIFY.getType());
+            final HashMap<String, Object> amount = new HashMap<>();
+            amount.put("total", totalMoney);
+            amount.put("refund",form.getRefundMoney());
+            map.put("amount",amount);
+            amount.put("currency", "CNY");
+            WxPayUtil.setRequestEntity(request,map);
 
-        try(CloseableHttpResponse response = wxPayClient.execute(request)){
-            final int statusCode = response.getStatusLine().getStatusCode();
-            final String body = EntityUtils.toString(response.getEntity());
-            WxPayUtil.assertResponse(statusCode,body);
-            final Refund updateRefund = new Refund();
-            updateRefund.setContentReturn(body);
-            updateRefund.setRefundStatus(WxTradeState.REFUND.getType());
-            refundService.update(updateRefund,new UpdateWrapper<Refund>().eq("refund_no",refund.getRefundNo()));
-            final Order order = new Order();
-            order.setOrderStatus(OrderStatus.REFUND.getType());
-            orderService.update(order,new UpdateWrapper<Order>().eq("order_no",refund.getOrderNo()).eq("shop",refund.getShop()));
-        }catch (Exception e){
-            throw new RuntimeException(e);
+            try(CloseableHttpResponse response = wxPayClient.execute(request)){
+                final int statusCode = response.getStatusLine().getStatusCode();
+                final String body = EntityUtils.toString(response.getEntity());
+                WxPayUtil.assertResponse(statusCode,body);
+                final Refund updateRefund = new Refund();
+                updateRefund.setContentReturn(body);
+                updateRefund.setRefundStatus(WxTradeState.REFUND.getType());
+                refundService.update(updateRefund,new UpdateWrapper<Refund>().eq("refund_no",refund.getRefundNo()));
+                final Order order = new Order();
+                order.setOrderStatus(OrderStatus.REFUND.getType());
+                orderService.update(order,new UpdateWrapper<Order>().eq("order_no",refund.getOrderNo()).eq("shop",refund.getShop()));
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+            return Result.success("退款中");
+        }finally {
+            lock.unlock();
         }
-        return Result.success("退款中");
+
     }
 
     @Override
