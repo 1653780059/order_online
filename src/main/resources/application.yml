@@ -13,7 +13,7 @@ spring:
     listener:
       direct:
         prefetch: 1
-    host: 39.98.73.37
+    host: localhost
   #文件上传工具配置
   file-storage: #文件存储配置
     default-platform: tencent-cos-1 #默认使用的存储平台
@@ -21,8 +21,8 @@ spring:
     tencent-cos: # 腾讯云 COS
       - platform: tencent-cos-1 # 存储平台标识
         enable-storage: true  # 启用存储
-        secret-id: AKIDztnmaFj3A5wc9WhkfQ0Rs68xa0DEE5mT
-        secret-key: sa6PXTDk5EAuWv8B2UuAF9tSp8JI5iDc
+        secret-id: AKID*************************EE5mT
+        secret-key: sa6P***********************JI5iDc
         region: ap-nanjing #存仓库所在地域
         bucket-name: emos-1307368688
         domain: https://emos-1307368688.cos.ap-nanjing.myqcloud.com/ # 访问域名，注意“/”结尾，例如：https://abc.cos.ap-nanjing.myqcloud.com/
@@ -41,14 +41,14 @@ spring:
     url: jdbc:mysql://localhost:3306/order_online?serverTimezone=GMT%2B8&characterEncoding=utf8
     #redis
   redis:
-    host: 39.98.73.37
+    host: localhost
     password: 123321
   #邮件配置
   mail:
     host: smtp.qq.com
     port: 587
-    username: 3230935352@qq.com
-    password: wnklvrqmoigvdaif
+    username: 32*********52@qq.com
+    password: wn**********gvdaif
     protocol: smtp
     properties:
       mail:
@@ -61,7 +61,7 @@ spring:
               fallback: false
     default-encoding: utf-8
   elasticsearch:
-    uris: http://39.98.73.37:9200
+    uris: http://localhost:9200
 
 #mybatis-plus配置
 mybatis-plus:
@@ -72,10 +72,10 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-#wxpay:
-  #notify-domain: 
+wxpay:
+  notify-domain: 微信回调地址
 redission:
-  redisHost: 39.98.73.37
+  redisHost: localhost
 
 
 
